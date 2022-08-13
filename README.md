@@ -1,2 +1,2 @@
 # Art_generation
-Generation art by another art
+Generation of an art by an another art
