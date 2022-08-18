@@ -1,5 +1,7 @@
 
-from art import Art
+
+from media import Media
+
 
 class AccompanimentGenerator:
 
@@ -9,6 +11,6 @@ class AccompanimentGenerator:
         self.controller = None
 
 
-    def generate_accompaniment(self, art: Art) -> Art:
+    def generate_accompaniment(self, media: Media) -> Media:
 
         pass

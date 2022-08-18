@@ -1,62 +1,72 @@
 
-from art import Art
+from media import Media
 from enum import Enum
 import random
-
-class Column(Enum):
-    ID = 'ID'
-    DURATION = 'duration'
-    CONTENT = 'content'
-    StartOfParagraf = 'startOfParagraph'
-    StartTime = 'startTime'
-    LinkToVideo = 'linkToVideo'
-
 import sqlite3 as sql
 from tqdm import tqdm
 
+
+
+class Column(Enum):
+
+    ID = 'ID'
+    TYPE = "type"
+    TITLE = "title"
+    SCORE = "score"
+    SOURCE = "source"
+    FOLDER = "folder"
+    TAGS = "tags"
+
+
+
 class TableManager:
+
     def __init__(self):
-        self.db_file_name = "subtitles.db"
-        self.table_name = 'subtitles'
+
+        self.db_file_name = "media_data_base.db"
+        self.table_name = 'media_table'
         self.cursor = None
         self.connection = None
 
+
     def create_connection(self):
+
         self.connection = sql.connect(self.db_file_name)
 
-        # def dict_factory(cursor, row):
-        #     # обертка для преобразования
-        #     # полученной строки. (взята из документации)
-        #     d = {}
-        #     for idx, col in enumerate(cursor.description):
-        #         d[col[0]] = row[idx]
-        #     return d
-        #
-        # self.connection.row_factory = dict_factory
 
     def create_cursor(self):
-        assert self.connection != None, 'connection is not created'
+
+        assert self.connection != None, 'Connection is not created!'
+
         self.cursor = self.connection.cursor()
 
+
     def table_not_exists(self) -> bool:
-        assert self.cursor != None, 'cursor is not created'
+
+        assert self.cursor != None, 'Cursor is not created!'
+
         self.cursor.execute('''SELECT name FROM sqlite_master WHERE type='table';''')
         db = self.cursor.fetchall()
         print(f'existing tables {db}')
+
         return len(db) == 0 or self.table_name not in db[0] # [table['name'] for table in db]
 
+
     def create_table(self):
+
         if self.table_not_exists():
 
             query = f'''CREATE TABLE {self.table_name} 
-                        ({Column.ID.value} integer, {Column.LinkToVideo.value} text, {Column.DURATION.value} integer, {Column.CONTENT.value} text, {Column.StartOfParagraf.value} integer, {Column.StartTime.value} integer)'''
+                        ({Column.ID.value} integer, {Column.TYPE.value} text, {Column.TITLE.value} text, {Column.SCORE.value} float, {Column.SOURCE.value} text, {Column.FOLDER.value} text, {Column.TAGS.value} text)'''
             self.cursor.execute(query)
 
         print(f'Table {self.table_name} is created.')
 
+
     def save_changes(self):
         # Save (commit) the changes
         self.connection.commit()
+
 
     def close_connection(self):
 
@@ -64,25 +74,25 @@ class TableManager:
         # Just be sure any changes have been committed or they will be lost.
         self.connection.close()
 
-    def upload_video_to_table(self, list_of_rows: list):
-        # the list_of_rows must be a list of tuples (is a subtitles of the video)
 
-        ID = list_of_rows[0][0]
+    def upload_row_to_table(self, row: tuple):
+
+        ID = row[0]
         query = f"SELECT EXISTS(SELECT 1 FROM {self.table_name} WHERE {Column.ID.value}={ID} LIMIT 1)"
         res = self.cursor.execute(query).fetchall()
         #print(res)
         id_not_exists = res[0][0] == 0
 
         if id_not_exists:
-            query = f"INSERT INTO {self.table_name} VALUES (?, ?, ?, ?, ?, ?)"
-            self.cursor.executemany(query, list_of_rows)
+            query = f"INSERT INTO {self.table_name} VALUES (?, ?, ?, ?, ?, ?, ?)"
+            self.cursor.execute(query, row)
 
-    def upload_videos_to_table(self, videos):
+            print('Row was uploaded to the database.')
+            return True
 
-        for list_of_rows in tqdm(videos):
-            self.upload_video_to_table(list_of_rows)
+        print('Row is already exist.')
+        return False
 
-        print(f'All {len(videos)} videos were uploaded to the database.')
 
     def find_in_table(self, column: Column, value):
 
@@ -93,39 +103,46 @@ class TableManager:
 
         return self.cursor.execute(query).fetchall()
 
-    def find_string_usage_in_subtitles(self, string: str):
-
-        try:
-            results = self.find_in_table(column=Column.CONTENT, value=f'% {string} %')
-        except Exception as e: #TODO
-            return None
-
-        if len(results) == 0:
-            return None
-        elif len(results[0]) == 0:
-            return None
-        else:
-            return results
 
 
 class DataBaseInterface:
 
     def __init__(self):
 
-        self.db_file_path = "db_file_path"
+        self.db_file_name = "media_data_base.db"
+        self.table_name = 'media_table'
 
 
-    def upload_art(self, art: Art):
-        # этот метод выводит название и ID загруженного произведения
+        self.table_manager = TableManager()
+
+        self.table_manager.create_connection()
+        self.table_manager.create_cursor()
+
+        self.table_manager.create_table()
+
+        self.table_manager.save_changes()
+        self.table_manager.close_connection()
+
+
+    def upload_media(self, media: Media):
+
+        self.table_manager.create_connection()
+        self.table_manager.create_cursor()
+
+        row = (media.ID, media.type, media.title, media.score, media.source, media.folder_with_medias_path, media.tags)
+        self.table_manager.upload_row_to_table(row)
+        print(f"Media {media.ID} with title \"{media.title}\" is uploaded to the media table.")
+
+        self.table_manager.save_changes()
+        self.table_manager.close_connection()
+
+
+    def get_media(self, media_ID_or_name):
+
         pass
 
 
-    def get_art(self, art_ID_or_name):
-
-        pass
-
-
-    def update_reaction(self, art_ID_or_name, reaction):
+    def update_reaction(self, media_ID_or_name, reaction):
 
         pass
 

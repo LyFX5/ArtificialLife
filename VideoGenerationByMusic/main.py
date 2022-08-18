@@ -1,57 +1,84 @@
 
+
 import interface_tools as itf
 from data_base_api import DataBaseInterface
-import art
+import media
 from accompaniment_generation import AccompanimentGenerator
+
 
 if __name__ == "__main__":
 
     generator = AccompanimentGenerator()
     data_base = DataBaseInterface()
+    media_processor = media.MediaProcessor()
 
-    command = input("Write a command, please !")
+    command = input("Write a command, please !" + "\n")
     command = command.split()
 
     assert len(command) >= 2, "Such a command does not exist !"
 
-    if command[0] == itf.UserCommand.LOAD_AUDIO_ART.value:
-        # "load_audio_art hhtps: . . . "
+    if command[0] == itf.UserCommand.LOAD_AUDIO_MEDIA.value:
+        # "load_audio_media hhtps: . . . "
 
-        audio_art = art.AudioArt()
+        audio_media = media.Media()
         hyperlink = command[1]
-        audio_art.create_audio_art_from_hyperlink(hyperlink)
+        audio_media.create_audio_media_from_hyperlink(hyperlink)
 
-        data_base.upload_art(audio_art)
+        data_base.upload_media(audio_media)
 
-    elif command[0] == itf.UserCommand.LOAD_VIDEO_ART.value:
-        # "load_video_art hhtps: . . . "
+    elif command[0] == itf.UserCommand.LOAD_VIDEO_MEDIA.value:
+        # "load_video_media hhtps: . . . "
 
-        video_art = art.VideoArt()
+        video_media = media.Media()
         hyperlink = command[1]
-        video_art.create_video_art_from_hyperlink(hyperlink)
+        video_media.create_video_media_from_hyperlink(hyperlink)
 
-        data_base.upload_art(video_art)
+        data_base.upload_media(video_media)
 
-    elif command[0] == itf.UserCommand.GENERATE_ACCOMPANIMENT_FOR_ART.value:
-        # "generate_accompaniment_for_art (art ID or name)"
+    elif command[0] == itf.UserCommand.LOAD_VIDEO_WITH_AUDIO_MEDIA.value:
+        # "load_video_with_audio_media hhtps: . . . "
 
-        art_ID_or_name = command[1]
+        video_with_audio_media = media.Media()
+        hyperlink = command[1]
+        video_with_audio_media.create_video_with_audio_media_from_hyperlink(hyperlink)
 
-        art = data_base.get_art(art_ID_or_name)
+        data_base.upload_media(video_with_audio_media)
 
-        accompaniment_art = generator.generate_accompaniment(art)
+    elif command[0] == itf.UserCommand.GENERATE_ACCOMPANIMENT_FOR_MEDIA.value:
+        # "generate_accompaniment_for_media (media ID or name)"
 
-        data_base.upload_art(accompaniment_art) # этот метод выводит название и ID загруженного произведения
+        media_ID_or_name = command[1]
 
-    elif command[0] == itf.UserCommand.APPRECIATE_ACCOMPANIMENT_OF_THE_ART.value:
-        # "appreciate_accompaniment_of_the_art (art ID or name) (reaction)"
+        media = data_base.get_media(media_ID_or_name)
 
-        art_ID_or_name = command[1]
+        accompaniment_media = generator.generate_accompaniment(media)
+
+        data_base.upload_media(accompaniment_media)
+
+    elif command[0] == itf.UserCommand.MERGE_VIDEO_MEDIA_WITH_AUDIO_MEDIA.value:
+        # "merge_video_media_with_audio_media (video media ID or name) (audio media ID or name)"
+
+        video_media_ID_or_name = command[1]
+        audio_media_ID_or_name = command[2]
+
+        video_media = data_base.get_media(video_media_ID_or_name)
+        audio_media = data_base.get_media(audio_media_ID_or_name)
+
+        video_media_with_audio_media = media_processor.merge_video_media_with_audio_media(video_media, audio_media)
+
+        data_base.upload_media(video_media_with_audio_media)
+
+    elif command[0] == itf.UserCommand.APPRECIATE_ACCOMPANIMENT_OF_THE_MEDIA.value:
+        # "appreciate_accompaniment_of_the_media (media ID or name) (reaction)"
+
+        media_ID_or_name = command[1]
         reaction = command[2]
 
-        data_base.update_reaction(art_ID_or_name, reaction)
+        data_base.update_reaction(media_ID_or_name, reaction)
 
     else:
         print("Such a command does not exist !")
 
 
+# load_audio_media https://www.youtube.com/watch?v=1hRTcSp0X1U
+# load_video_with_audio_media https://www.youtube.com/watch?v=1hRTcSp0X1U
