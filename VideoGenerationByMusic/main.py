@@ -17,35 +17,31 @@ if __name__ == "__main__":
 
     assert len(command) >= 2, "Such a command does not exist !"
 
-    if command[0] == itf.UserCommand.LOAD_AUDIO_MEDIA.value:
-        # "load_audio_media hhtps: . . . "
+    if command[0] == itf.UserCommand.LOAD_AUDIO_MEDIA.value: # "load_audio_media hhtps: . . . "
 
         audio_media = media.Media()
         hyperlink = command[1]
-        audio_media.create_audio_media_from_hyperlink(hyperlink)
+        audio_media.create_media_from_hyperlink(hyperlink, media.TypesOfMedia.AUDIO)
 
         data_base.upload_media(audio_media)
 
-    elif command[0] == itf.UserCommand.LOAD_VIDEO_MEDIA.value:
-        # "load_video_media hhtps: . . . "
+    elif command[0] == itf.UserCommand.LOAD_VIDEO_MEDIA.value: # "load_video_media hhtps: . . . "
 
         video_media = media.Media()
         hyperlink = command[1]
-        video_media.create_video_media_from_hyperlink(hyperlink)
+        video_media.create_media_from_hyperlink(hyperlink, media.TypesOfMedia.VIDEO)
 
         data_base.upload_media(video_media)
 
-    elif command[0] == itf.UserCommand.LOAD_VIDEO_WITH_AUDIO_MEDIA.value:
-        # "load_video_with_audio_media hhtps: . . . "
+    elif command[0] == itf.UserCommand.LOAD_VIDEO_WITH_AUDIO_MEDIA.value: # "load_video_with_audio_media hhtps: . . . "
 
         video_with_audio_media = media.Media()
         hyperlink = command[1]
-        video_with_audio_media.create_video_with_audio_media_from_hyperlink(hyperlink)
+        video_with_audio_media.create_media_from_hyperlink(hyperlink, media.TypesOfMedia.VIDEO_WITH_AUDIO)
 
         data_base.upload_media(video_with_audio_media)
 
-    elif command[0] == itf.UserCommand.GENERATE_ACCOMPANIMENT_FOR_MEDIA.value:
-        # "generate_accompaniment_for_media (media ID or name)"
+    elif command[0] == itf.UserCommand.GENERATE_ACCOMPANIMENT_FOR_MEDIA.value: # "generate_accompaniment_for_media (media ID or name)"
 
         media_ID_or_name = command[1]
 
@@ -55,8 +51,7 @@ if __name__ == "__main__":
 
         data_base.upload_media(accompaniment_media)
 
-    elif command[0] == itf.UserCommand.MERGE_VIDEO_MEDIA_WITH_AUDIO_MEDIA.value:
-        # "merge_video_media_with_audio_media (video media ID or name) (audio media ID or name)"
+    elif command[0] == itf.UserCommand.MERGE_VIDEO_MEDIA_WITH_AUDIO_MEDIA.value: # "merge_video_media_with_audio_media (video media ID or name) (audio media ID or name)"
 
         video_media_ID_or_name = command[1]
         audio_media_ID_or_name = command[2]
@@ -68,8 +63,7 @@ if __name__ == "__main__":
 
         data_base.upload_media(video_media_with_audio_media)
 
-    elif command[0] == itf.UserCommand.APPRECIATE_ACCOMPANIMENT_OF_THE_MEDIA.value:
-        # "appreciate_accompaniment_of_the_media (media ID or name) (reaction)"
+    elif command[0] == itf.UserCommand.APPRECIATE_ACCOMPANIMENT_OF_THE_MEDIA.value: # "appreciate_accompaniment_of_the_media (media ID or name) (reaction)"
 
         media_ID_or_name = command[1]
         reaction = command[2]

@@ -11,6 +11,10 @@ class TypesOfMedia(Enum):
     VIDEO = "video"
     VIDEO_WITH_AUDIO = "video_with_audio"
 
+    PICTURE = "picture"
+
+    TEXT = "text"
+
 
 def to_ascii(text):
     ascii_str = ""
@@ -33,67 +37,38 @@ class Media:
         self.title = None
 
 
-    def create_audio_media_from_hyperlink(self, hyperlink: str):
+    def create_media_from_hyperlink(self, hyperlink: str, media_type: TypesOfMedia):
 
         assert "https://www.youtube.com/" in hyperlink, "Provide YouTube video link, please!"
 
         self.source = hyperlink
 
-        self.type = TypesOfMedia.AUDIO.value
+        self.type = media_type.value
 
         youtube_video = YouTube(hyperlink)
 
         self.title = youtube_video.title
 
-        self.ID = to_ascii("a" + youtube_video.video_id)
+        if self.type == TypesOfMedia.AUDIO.value:
+            self.ID = to_ascii("a" + youtube_video.video_id)
+            media = youtube_video.streams.filter(only_audio=True)[0]
 
-        audio = youtube_video.streams.filter(only_audio=True)[0]
+        elif self.type == TypesOfMedia.VIDEO.value:
+            self.ID = to_ascii("v" + youtube_video.video_id)
+            media = youtube_video.streams.filter(only_video=True)[0]
 
-        audio.download(self.folder_with_medias_path, filename=f"{self.type}_{str(self.ID)}_{self.title}.mp4")
+        elif self.type == TypesOfMedia.VIDEO_WITH_AUDIO.value:
+            self.ID = to_ascii("va" + youtube_video.video_id)
+            media = youtube_video.streams.get_highest_resolution()
 
-        print("Audio is downloaded.")
-
-
-    def create_video_media_from_hyperlink(self, hyperlink: str):
-
-        assert "https://www.youtube.com/" in hyperlink, "Provide YouTube video link, please!"
-
-        self.source = hyperlink
-
-        self.type = TypesOfMedia.VIDEO.value
-
-        youtube_video = YouTube(hyperlink)
-
-        self.title = youtube_video.title
-
-        self.ID = to_ascii("v" + youtube_video.video_id)
-
-        video = youtube_video.streams.filter(only_video=True)[0]
-
-        video.download(self.folder_with_medias_path, filename=f"{self.type}_{str(self.ID)}_{self.title}.mp4")
-
-        print("Video is downloaded.")
+        else:
+            assert False, "Media type dose not exist!"
 
 
-    def create_video_with_audio_media_from_hyperlink(self, hyperlink: str):
+        media.download(self.folder_with_medias_path, filename=f"{self.type}_{str(self.ID)}_{self.title}.mp4")
 
-        assert "https://www.youtube.com/" in hyperlink, "Provide YouTube video link, please!"
+        print("Media is downloaded.")
 
-        self.source = hyperlink
-
-        self.type = TypesOfMedia.VIDEO_WITH_AUDIO.value
-
-        youtube_video = YouTube(hyperlink)
-
-        self.title = youtube_video.title
-
-        self.ID = to_ascii("va" + youtube_video.video_id)
-
-        video_with_audio = youtube_video.streams.get_highest_resolution()
-
-        video_with_audio.download(self.folder_with_medias_path, filename=f"{self.type}_{str(self.ID)}_{self.title}.mp4")
-
-        print("Video with audio is downloaded.")
 
 
 class MediaProcessor:
@@ -111,6 +86,12 @@ class MediaProcessor:
 
 
 
+
+
+# class MediaAgent(Media):
+#
+#     def __int__(self):
+#         super(MediaAgent, self).__init__()
 
 
 
