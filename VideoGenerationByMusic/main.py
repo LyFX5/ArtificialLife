@@ -76,3 +76,7 @@ if __name__ == "__main__":
 
 # load_audio_media https://www.youtube.com/watch?v=1hRTcSp0X1U
 # load_video_with_audio_media https://www.youtube.com/watch?v=1hRTcSp0X1U
+
+
+# Пользователь загружает картинку. Мы выдаем несколько вариантов совмещения этой картинки с другими и выделяем лучшее
+# по нашему мнению слияние. Пользователь оценивает или не оценивает эти слияния.
