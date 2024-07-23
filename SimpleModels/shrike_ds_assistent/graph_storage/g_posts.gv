@@ -1,0 +1,11 @@
+graph g_posts {
+	node [color=lightblue2 style=filled]
+	size="6,6"
+	label="\nAssociative Graph of Posts"
+	fontsize=20
+	post_1 -- post_2 [label=tag_2]
+	post_1 -- post_3 [label=tag_2]
+	post_1 -- post_3 [label=tag_3]
+	post_1 -- post_4 [label=tag_1]
+	post_2 -- post_3 [label=tag_2]
+}

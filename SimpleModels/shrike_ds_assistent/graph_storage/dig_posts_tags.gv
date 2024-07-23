@@ -1,0 +1,14 @@
+digraph dig_posts_tags {
+	node [color=lightblue2 style=filled]
+	size="6,6"
+	label="\nPosts to Tags Map"
+	fontsize=20
+	post_1 -> tag_1
+	post_1 -> tag_2
+	post_1 -> tag_3
+	post_2 -> tag_2
+	post_3 -> tag_2
+	post_3 -> tag_3
+	post_4 -> tag_1
+	post_4 -> tag_4
+}
