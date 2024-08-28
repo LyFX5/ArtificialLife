@@ -26,10 +26,6 @@ class PygameShapeDrawer:
                                   0)
 
     def draw_rectangle(self, screen, color, x, y):
-        # x_top_left = x - w / 2
-        # y_top_left = y - h / 2
-        # x_bottom_right = x + w / 2
-        # y_bottom_right = y + h / 2
         return pygame.draw.rect(screen, 
                                 color, 
                                 pygame.Rect(x, y, self.w, self.h))
@@ -64,7 +60,7 @@ class PygameSession:
                                               cells_number_horizontal = self.agents_number,
                                               shape_string = "circle")
         # writings
-        self.font_size = 15
+        self.font_size = 20
 
     def simulation_steps(self):
         return self.__simulation_steps
@@ -72,7 +68,9 @@ class PygameSession:
     def metrics_strings(self):
         return [f"Simulation Steps Left: {self.simulation_steps()}",
                 f"Number of Agents: {self.agents_number}",
-                f"Number of each Agent's bits: {self.bits_number}"]
+                f"Number of each Agent's bits: {self.bits_number}",
+                f"{[int(self.simulation.group.state[i , :].sum()) for i in range(self.bits_number)]}",
+                ] # + [f"{self.simulation.group.adjacency_matrix[j]}" for j in range(self.agents_number)]
         
     def draw_text(self, text: str, x, y):
         green = (0, 255, 0)
@@ -91,7 +89,7 @@ class PygameSession:
         self.screen.blit(text, textRect)
         
     def draw_metrics_table(self):
-        table_coords = [0.88 * self.screen_size[0], 0.05 * self.screen_size[1]]
+        table_coords = [0.85 * self.screen_size[0], 0.03 * self.screen_size[1]]
         self.font = pygame.font.Font('freesansbold.ttf', self.font_size)
         metrics_strings = self.metrics_strings()
         for m in range(len(metrics_strings)):
